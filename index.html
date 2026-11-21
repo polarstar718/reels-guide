@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>신혼 릴스 시작 & 조회수 분석 가이드</title>
+  <style>
+    :root {
+      --bg: #fdf8f6;
+      --card: #ffffff;
+      --text: #222222;
+      --muted: #6b7280;
+      --border: #f0e4df;
+      --accent: #e1306c;
+      --accent-soft: #fff0f5;
+      --accent-grad: linear-gradient(135deg, #f58529 0%, #dd2a7b 55%, #8134af 100%);
+      --green: #10b981;
+      --green-soft: #ecfdf5;
+      --amber: #b45309;
+      --amber-soft: #fffbeb;
+      --shadow: 0 6px 20px rgba(34, 34, 34, 0.06);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 18px 16px 64px;
+    }
+
+    /* Hero */
+    .hero {
+      background: var(--accent-grad);
+      color: #fff;
+      border-radius: 22px;
+      padding: 24px 20px 22px;
+      box-shadow: 0 12px 28px rgba(221, 42, 123, 0.22);
+      margin-bottom: 16px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(6px);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      letter-spacing: -0.2px;
+    }
+
+    .hero h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.3;
+      letter-spacing: -0.4px;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 14px;
+      opacity: 0.94;
+    }
+
+    /* Progress */
+    .progress-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .progress-count {
+      color: var(--accent);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #f3e8ec;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-grad);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: #f4ebe7;
+      padding: 5px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      border: none;
+      background: transparent;
+      padding: 10px 8px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: #fff;
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    /* Notice Banner */
+    .notice {
+      background: var(--green-soft);
+      border: 1px solid #bbf7d0;
+      color: #065f46;
+      border-radius: 14px;
+      padding: 13px 15px;
+      font-size: 13.5px;
+      margin-bottom: 14px;
+    }
+
+    .notice strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 14px;
+    }
+
+    /* Step Card */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+      transition: border-color 0.2s ease, opacity 0.2s ease;
+    }
+
+    .card.done {
+      border-color: #a7f3d0;
+      background: #fcfffd;
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+
+    .step-meta {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .step-title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .check-btn {
+      flex-shrink: 0;
+      border: 2px solid #e5d6d0;
+      background: #fff;
+      color: var(--muted);
+      border-radius: 12px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .card.done .check-btn {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+    }
+
+    .steps-list {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 14.5px;
+    }
+
+    .steps-list li {
+      margin-bottom: 7px;
+    }
+
+    .steps-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .tip-box {
+      margin-top: 12px;
+      background: var(--amber-soft);
+      border: 1px solid #fde68a;
+      color: #78350f;
+      border-radius: 12px;
+      padding: 11px 13px;
+      font-size: 13px;
+    }
+
+    .tip-box b {
+      color: var(--amber);
+    }
+
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      margin-top: 12px;
+      padding: 11px 14px;
+      background: #1f2937;
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .link-btn.pink {
+      background: var(--accent-grad);
+    }
+
+    /* Copy Chips */
+    .copy-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .copy-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f9f5f3;
+      border: 1px solid #eadcd6;
+      border-radius: 11px;
+      padding: 9px 12px;
+      gap: 8px;
+    }
+
+    .copy-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: #111827;
+      word-break: break-all;
+    }
+
+    .copy-btn {
+      flex-shrink: 0;
+      border: none;
+      background: #fff;
+      border: 1px solid #dfd1cb;
+      color: #374151;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .copy-btn.copied {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+    }
+
+    details {
+      margin-top: 12px;
+      background: #faf6f4;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: #4b5563;
+    }
+
+    summary {
+      font-weight: 700;
+      cursor: pointer;
+      color: #374151;
+    }
+
+    details p {
+      margin: 8px 0 0;
+    }
+
+    /* Tab 2 styles */
+    .formula-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .formula-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .formula-item h3 {
+      margin: 0 0 4px;
+      font-size: 15.5px;
+      font-weight: 800;
+    }
+
+    .formula-item p {
+      margin: 0;
+      font-size: 13.5px;
+      color: #4b5563;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 800;
+      margin: 18px 2px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .idea-tag {
+      display: inline-block;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .hook-box {
+      margin-top: 10px;
+      background: #fff5f8;
+      border: 1px dashed #f4a4c0;
+      border-radius: 11px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #9d174d;
+    }
+
+    .finish-box {
+      background: linear-gradient(135deg, #fff5f8 0%, #fef9f5 100%);
+      border: 1.5px solid #f7c6d8;
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    .finish-box h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .finish-box p {
+      margin: 0;
+      font-size: 13.5px;
+      color: #4b5563;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(17, 24, 39, 0.92);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 999;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Hero -->
+    <header class="hero">
+      <div class="hero-badge">📱 신혼·일상 릴스 프로젝트</div>
+      <h1>인스타 릴스 조회수 분석<br/>따라하기 가이드</h1>
+      <p>100% 무료 세팅부터 첫 영상 기획까지, 체크하며 하나씩 해봐요 ✨</p>
+    </header>
+
+    <!-- Progress -->
+    <section class="progress-card">
+      <div class="progress-top">
+        <span>세팅 진행률</span>
+        <span class="progress-count" id="progressText">0 / 4 완료</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <nav class="tabs" role="tablist">
+      <button class="tab-btn active" onclick="switchTab('setup', this)">1. 10분 무료 세팅</button>
+      <button class="tab-btn" onclick="switchTab('ideas', this)">2. 릴스 공식 & 기획</button>
+    </nav>
+
+    <!-- TAB 1: SETUP -->
+    <main id="tab-setup" class="panel active">
+      <div class="notice">
+        <strong>💡 걱정 마세요, 100% 완전 무료예요!</strong>
+        프로페셔널(크리에이터) 계정 전환은 돈이 전혀 안 들어요. (파란 딱지 '메타 인증'만 유료!) 개인 계정을 비공개로 두고 싶다면 <b>신혼 릴스용 새 계정</b>을 하나 만들어서 시작해도 좋아요.
+      </div>
+
+      <!-- Step 1 -->
+      <article class="card" data-step="1">
+        <div class="step-header">
+          <div>
+            <span class="step-badge">STEP 1 · 폰 인스타 앱 (1분)</span>
+            <h2 class="step-title">크리에이터 계정으로 전환하기</h2>
+          </div>
+          <button class="check-btn" onclick="toggleStep(1)">완료 체크</button>
+        </div>
+        <ol class="steps-list">
+          <li>인스타그램 앱 → 내 프로필 오른쪽 위 <b>≡ (메뉴)</b> 누르기</li>
+          <li><b>계정 유형 및 도구</b> 선택</li>
+          <li><b>프로페셔널 계정으로 전환</b> → <b>크리에이터</b> 선택 (카테고리는 '블로거'나 아무거나 OK)</li>
+        </ol>
+        <div class="tip-box">
+          <b>꿀팁:</b> 전환하면 공개 계정이 돼요. 기존 계정이 부담스러우면 신혼 브이로그용 부계정을 파서 전환하는 걸 추천해요! (언제든 일반 계정으로 무료 복귀 가능)
+        </div>
+      </article>
+
+      <!-- Step 2 -->
+      <article class="card" data-step="2">
+        <div class="step-header">
+          <div>
+            <span class="step-badge">STEP 2 · 폰 앱 (2분)</span>
+            <h2 class="step-title">페이스북 페이지 만들고 연결하기</h2>
+          </div>
+          <button class="check-btn" onclick="toggleStep(2)">완료 체크</button>
+        </div>
+        <ol class="steps-list">
+          <li><b>페이스북 앱</b> → 메뉴에서 <b>페이지</b> → <b>만들기</b> 클릭</li>
+          <li>페이지 이름은 아무거나 적고 생성 (게시물 안 올려도 돼요!)</li>
+          <li>다시 <b>인스타 앱</b> → <b>프로필 편집</b> → <b>페이지</b>에서 방금 만든 페이지 연결</li>
+        </ol>
+        <details>
+          <summary>왜 페이스북 페이지가 필요한가요?</summary>
+          <p>내 계정 통계만 볼 때는 필요 없지만, <b>다른 신혼 크리에이터들의 릴스 조회수</b>를 공식적으로 불러오려면 메타 정책상 페이스북 페이지 1개가 연결되어 있어야 해요. 빈 페이지여도 괜찮습니다!</p>
+        </details>
+      </article>
+
+      <!-- Step 3 -->
+      <article class="card" data-step="3">
+        <div class="step-header">
+          <div>
+            <span class="step-badge">STEP 3 · 웹 브라우저 (3분)</span>
+            <h2 class="step-title">메타 개발자 앱 만들기</h2>
+          </div>
+          <button class="check-btn" onclick="toggleStep(3)">완료 체크</button>
+        </div>
+        <ol class="steps-list">
+          <li>아래 버튼으로 <b>Meta for Developers</b> 접속 후 페이스북 로그인 (처음이면 개발자 등록 누르기)</li>
+          <li><b>내 앱</b> → <b>앱 만들기</b> 클릭</li>
+          <li>용도 선택에서 <b>기타(Other)</b> → 앱 유형은 <b>비즈니스(Business)</b> 선택</li>
+          <li>앱 이름 적당히 입력하고 생성 완료!</li>
+        </ol>
+        <div class="tip-box">
+          <b>중요 체크!</b><br/>
+          • 3~4단계는 화면이 넓어야 편해서 <b>PC 추천</b>! 폰이라면 크롬 오른쪽 위 점 3개(⋮) → <b>데스크톱 사이트</b>를 켜고 하세요.<br/>
+          • 'Instagram 로그인' 단독 방식이 아니라 <b>기타 → 비즈니스</b>로 만들어야 다른 계정 조회수가 나옵니다!
+        </div>
+        <a class="link-btn" href="https://developers.facebook.com/apps/" target="_blank" rel="noopener">🔗 Meta for Developers 바로가기</a>
+      </article>
+
+      <!-- Step 4 -->
+      <article class="card" data-step="4">
+        <div class="step-header">
+          <div>
+            <span class="step-badge">STEP 4 · 웹 브라우저 (2분)</span>
+            <h2 class="step-title">인증 키(토큰) 발급해서 복사하기</h2>
+          </div>
+          <button class="check-btn" onclick="toggleStep(4)">완료 체크</button>
+        </div>
+        <ol class="steps-list">
+          <li>아래 버튼으로 <b>Graph API 탐색기</b> 열기</li>
+          <li>오른쪽 <b>Meta 앱</b>에서 방금 만든 앱 선택</li>
+          <li><b>권한 추가</b> 칸에 아래 3개를 하나씩 복사해서 추가하기</li>
+          <li><b>액세스 토큰 생성</b> 버튼 클릭 → 방금 만든 페이지·인스타 계정 체크 후 허용</li>
+          <li>맨 위에 뜬 긴 영어 문자열(<b>액세스 토큰</b>) 복사!</li>
+        </ol>
+
+        <div class="copy-group">
+          <div class="copy-row">
+            <span class="copy-code">instagram_basic</span>
+            <button class="copy-btn" onclick="copyText('instagram_basic', this)">복사</button>
+          </div>
+          <div class="copy-row">
+            <span class="copy-code">pages_show_list</span>
+            <button class="copy-btn" onclick="copyText('pages_show_list', this)">복사</button>
+          </div>
+          <div class="copy-row">
+            <span class="copy-code">pages_read_engagement</span>
+            <button class="copy-btn" onclick="copyText('pages_read_engagement', this)">복사</button>
+          </div>
+        </div>
+
+        <a class="link-btn pink" href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noopener">🔑 Graph API 탐색기 바로가기</a>
+      </article>
+
+      <!-- Finish -->
+      <div class="finish-box">
+        <h3>🎉 다 끝났다면 딱 2가지만 전달해 주세요!</h3>
+        <p>
+          1) 복사한 <b>액세스 토큰</b><br/>
+          2) 분석해보고 싶은 <b>신혼·일상 인스타 아이디 3~5개</b><br/><br/>
+          전달해 주면 조회수 TOP 10 정렬부터 떡상 패턴 분석, 바로 찍을 1편 대본까지 자동으로 뽑아드려요!
+        </p>
+      </div>
+    </main>
+
+    <!-- TAB 2: IDEAS -->
+    <section id="tab-ideas" class="panel">
+      <div class="section-title">🔥 요즘 조회수 터지는 3가지 공식</div>
+      <div class="formula-grid">
+        <div class="formula-item">
+          <h3>1. 첫 3초에 인사 빼고 바로 궁금증!</h3>
+          <p>"안녕하세요~" 대신 첫 장면에 시선을 멈추는 자막을 바로 띄워요. 3초 안에 안 잡으면 바로 넘어가요.</p>
+        </div>
+        <div class="formula-item">
+          <h3>2. '좋아요'보다 '저장'과 'DM 공유'</h3>
+          <p>"남편한테 보내줘야지ㅋㅋ"(공감) 또는 "이거 따라 사야지"(살림 꿀팁)가 들어가야 알고리즘이 확 밀어줘요.</p>
+        </div>
+        <div class="formula-item">
+          <h3>3. 한 장면 2~3초 + 화면 중앙 자막</h3>
+          <p>화면이 길어지면 지루해서 나가요. 짧고 경쾌하게 자르고, 소리 끄고 보는 사람을 위해 자막을 꼭 넣어요.</p>
+        </div>
+      </div>
+
+      <div class="section-title">🎬 바로 찍어볼 신혼 릴스 기획안 3가지</div>
+
+      <article class="card">
+        <span class="idea-tag">추천 1 · 저장수 폭발 (초보 강추)</span>
+        <h3 class="step-title">신혼집 살림템 잘 산 것 3가지 + 후회템 1가지</h3>
+        <p style="font-size:14px; color:#4b5563; margin:8px 0 0;">예쁘게 꾸민 화면보다 <b>실제로 쓰는 모습</b>을 2~3초씩 빠르게 보여주세요. 마지막에 "여러분 후회템도 댓글로 알려주세요"를 넣으면 댓글이 잘 달려요.</p>
+        <div class="hook-box">
+          <span>"신혼집 들이고 제일 후회한 가전 1위"</span>
+          <button class="copy-btn" onclick="copyText('신혼집 들이고 제일 후회한 가전 1위', this)">복사</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="idea-tag">추천 2 · DM 공유 폭발</span>
+        <h3 class="step-title">연애 때 vs 결혼 후 180도 바뀐 현실 부부</h3>
+        <p style="font-size:14px; color:#4b5563; margin:8px 0 0;">과하게 꾸미지 말고 폰으로 툭 찍은 현실감이 포인트! 부부끼리 서로 태그·공유하면서 조회수가 잘 터져요.</p>
+        <div class="hook-box">
+          <span>"남편 출근시키자마자 제가 제일 먼저 하는 일"</span>
+          <button class="copy-btn" onclick="copyText('남편 출근시키자마자 제가 제일 먼저 하는 일', this)">복사</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="idea-tag">추천 3 · 얼굴 안 나와도 OK</span>
+        <h3 class="step-title">맞벌이 신혼부부 퇴근 후 15분 현실 저녁상</h3>
+        <p style="font-size:14px; color:#4b5563; margin:8px 0 0;">완성된 먹음직스러운 요리를 <b>첫 2초에 먼저</b> 보여주고, 재료 손질부터 완성까지 빠르게 이어 붙이세요.</p>
+        <div class="hook-box">
+          <span>"퇴근 후 15분 컷, 남편이 제일 좋아하는 저녁"</span>
+          <button class="copy-btn" onclick="copyText('퇴근 후 15분 컷, 남편이 제일 좋아하는 저녁', this)">복사</button>
+        </div>
+      </article>
+
+      <div class="section-title">👀 무료로 인기 레퍼런스 미리 구경하기</div>
+      <article class="card">
+        <p style="font-size:14px; color:#4b5563; margin:0 0 8px;">
+          <b>메타 광고 라이브러리</b>에서 대한민국 · 모든 광고로 두고 <b>'신혼집'</b>이나 <b>'살림템'</b> 검색 → <b>동영상</b>만 필터링하면, 실제로 반응 좋아서 오래 노출되는 검증된 릴스 영상을 로그인 없이 볼 수 있어요!
+        </p>
+        <a class="link-btn" href="https://www.facebook.com/ads/library/" target="_blank" rel="noopener">🔍 메타 광고 라이브러리 구경가기</a>
+      </article>
+    </section>
+
+    <p class="footer-note">체크 상태는 이 기기에 자동 저장돼요 · 막히면 화면 캡처해서 보내주세요!</p>
+  </div>
+
+  <div class="toast" id="toast">복사했어요!</div>
+
+  <script>
+    const STORAGE_KEY = 'reels_setup_done_v1';
+
+    function loadDone() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch {
+        return [];
+      }
+    }
+
+    function saveDone(list) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      } catch {}
+    }
+
+    function renderProgress() {
+      const done = loadDone();
+      const cards = document.querySelectorAll('.card[data-step]');
+      cards.forEach(card => {
+        const step = Number(card.dataset.step);
+        const btn = card.querySelector('.check-btn');
+        if (done.includes(step)) {
+          card.classList.add('done');
+          btn.textContent = '완료됨 ✓';
+        } else {
+          card.classList.remove('done');
+          btn.textContent = '완료 체크';
+        }
+      });
+      const pct = Math.round((done.length / 4) * 100);
+      document.getElementById('progressText').textContent = `${done.length} / 4 완료`;
+      document.getElementById('progressFill').style.width = `${pct}%`;
+    }
+
+    function toggleStep(step) {
+      let done = loadDone();
+      if (done.includes(step)) {
+        done = done.filter(s => s !== step);
+      } else {
+        done.push(step);
+        if (done.length === 4) {
+          showToast('🎉 4단계 모두 완료! 이제 분석할 수 있어요!');
+        }
+      }
+      saveDone(done);
+      renderProgress();
+    }
+
+    function switchTab(name, el) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('tab-' + name).classList.add('active');
+    }
+
+    function copyText(text, btn) {
+      const finish = () => {
+        const prev = btn.textContent;
+        btn.textContent = '복사됨 ✓';
+        btn.classList.add('copied');
+        showToast(`"${text}" 복사했어요!`);
+        setTimeout(() => {
+          btn.textContent = prev;
+          btn.classList.remove('copied');
+        }, 1500);
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(finish).catch(() => fallbackCopy(text, finish));
+      } else {
+        fallbackCopy(text, finish);
+      }
+    }
+
+    function fallbackCopy(text, cb) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch {}
+      document.body.removeChild(ta);
+      cb();
+    }
+
+    let toastTimer;
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
+    }
+
+    renderProgress();
+  </script>
+</body>
+</html>
